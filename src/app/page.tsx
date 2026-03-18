@@ -18,7 +18,6 @@ import {
   BadgeCheck,
 } from "lucide-react";
 
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { AccountButton } from "@/components/auth/AccountButton";
 import { useCart } from "@/components/cart/CartContext";
 
@@ -309,6 +308,21 @@ export default function Home() {
 
   const normalizedQuery = query.trim().toLowerCase();
 
+  const heroProduct = useMemo(() => {
+    return (
+      products.find((p) => p.category === "pc-gamer") ??
+      products.find((p) => p.category === "portatil-gamer") ??
+      products[0] ??
+      null
+    );
+  }, [products]);
+
+  const anchorByCategoryId = useMemo(() => {
+    const map = new Map<CategoryId, string>();
+    for (const c of categories) map.set(c.id, c.anchor);
+    return map;
+  }, [categories]);
+
   const filteredProducts = useMemo(() => {
     if (!normalizedQuery) return products;
     return products.filter((p) => {
@@ -343,127 +357,80 @@ export default function Home() {
   return (
     <div className="bg-background text-foreground">
       <header className="sticky top-0 z-50 border-b border-foreground/10 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="mx-auto max-w-6xl px-4 py-3 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <a href="#inicio" className="flex items-center gap-2">
-                <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-orange-500/15 text-orange-600 dark:text-orange-400">
-                  <span className="text-sm font-semibold">T</span>
-                </span>
-                <span className="font-semibold tracking-tight">TechStore</span>
-              </a>
-
-              <div
-                ref={categoriesPopoverRef}
-                className="relative hidden sm:block"
+        <div className="border-b border-foreground/10 bg-foreground/[0.02]">
+          <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2 text-[11px] text-foreground/70 sm:px-6 lg:px-8">
+            <p className="line-clamp-1">
+              ¿Algún problema con el uso de esta página? (319) 626-2690
+            </p>
+            <div className="flex items-center gap-4">
+              <a
+                href="mailto:ventas@techstore.com"
+                className="hidden hover:text-foreground sm:inline"
               >
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (categoriesMenuState === "open") closeCategories();
-                    else openCategories();
-                  }}
-                  className="cursor-pointer rounded-full border border-foreground/10 bg-background px-4 py-2 text-sm text-foreground/80 transition-colors hover:bg-foreground/5 hover:text-foreground"
-                  aria-haspopup="menu"
-                  aria-expanded={categoriesMenuState === "open"}
-                >
-                  <span className="inline-flex items-center gap-2">
-                    Categorías
-                    <ChevronDown size={16} className="text-foreground/60" />
-                  </span>
-                </button>
-
-                {categoriesMenuState === "closed" ? null : (
-                  <div
-                    className={
-                      "absolute left-0 mt-2 w-[46rem] overflow-hidden rounded-3xl border border-foreground/10 bg-background p-3 shadow-sm transition-all duration-150 " +
-                      (categoriesMenuState === "open"
-                        ? "opacity-100 translate-y-0 scale-100"
-                        : "pointer-events-none opacity-0 translate-y-1 scale-[0.98]")
-                    }
-                  >
-                    <div className="flex items-center justify-between gap-4 px-2 pb-3">
-                      <p className="text-xs font-medium text-foreground/70">
-                        Explorar categorías
-                      </p>
-                      <a
-                        href="/categorias"
-                        onClick={closeCategories}
-                        className="text-xs font-medium text-orange-600 hover:underline dark:text-orange-400"
-                      >
-                        Ver todas las categorías →
-                      </a>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      {categories.map((c) => {
-                        const items = (menuProductsByCategory.get(c.id) ?? []).slice(
-                          0,
-                          4
-                        );
-                        return (
-                          <div
-                            key={c.id}
-                            className="rounded-3xl border border-foreground/10 bg-foreground/[0.02] p-3"
-                          >
-                            <a
-                              href={`/categorias?c=${c.id}`}
-                              onClick={closeCategories}
-                              className="flex items-start justify-between gap-3 rounded-2xl p-2 transition-colors hover:bg-foreground/5"
-                            >
-                              <div>
-                                <p className="flex items-center gap-2 font-medium text-foreground">
-                                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-foreground/10 bg-background text-foreground/80">
-                                    {CATEGORY_ICON[c.id]}
-                                  </span>
-                                  {c.title}
-                                </p>
-                                <p className="mt-1 text-xs text-foreground/70">
-                                  {c.description}
-                                </p>
-                              </div>
-                              <span className="text-sm text-orange-600 dark:text-orange-400">
-                                Ver →
-                              </span>
-                            </a>
-
-                            <div className="mt-2 grid gap-1">
-                              {items.map((p) => (
-                                <a
-                                  key={p.id}
-                                  href={`/categorias?c=${c.id}`}
-                                  onClick={closeCategories}
-                                  className="flex items-center justify-between gap-3 rounded-2xl px-3 py-2 text-sm text-foreground/80 transition-colors hover:bg-foreground/5 hover:text-foreground"
-                                >
-                                  <span className="line-clamp-1">{p.name}</span>
-                                </a>
-                              ))}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
+                ventas@techstore.com
+              </a>
+              <AccountButton variant="link" />
             </div>
+          </div>
+        </div>
+
+        <div className="mx-auto max-w-6xl px-4 py-3 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between gap-4">
+            <a href="#inicio" className="flex items-center gap-2">
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-orange-500/15 text-orange-600 dark:text-orange-400">
+                <span className="text-sm font-semibold">T</span>
+              </span>
+              <span className="font-semibold tracking-tight">TechStore</span>
+            </a>
+
+            <nav className="hidden flex-1 items-center justify-center gap-6 text-xs font-semibold uppercase tracking-wide text-foreground/80 lg:flex">
+              <a href="#inicio" className="hover:text-foreground">
+                Inicio
+              </a>
+              <a
+                href={`#${anchorByCategoryId.get("pc-gamer") ?? "pc-gamer"}`}
+                className="hover:text-foreground"
+              >
+                PC para gaming
+              </a>
+              <a
+                href={`#${
+                  anchorByCategoryId.get("portatil-gamer") ?? "portatil-gamer"
+                }`}
+                className="hover:text-foreground"
+              >
+                ¿Qué vamos a jugar?
+              </a>
+              <a
+                href={`#${anchorByCategoryId.get("portatil") ?? "portatil"}`}
+                className="hover:text-foreground"
+              >
+                PC para trabajo
+              </a>
+              <a
+                href={`#${anchorByCategoryId.get("accesorios") ?? "accesorios"}`}
+                className="hover:text-foreground"
+              >
+                Partes y accesorios
+              </a>
+            </nav>
 
             <div className="flex items-center gap-2">
               <div className="hidden lg:block">
                 <div className="flex h-10 items-center gap-2 rounded-full border border-foreground/10 bg-background px-4">
-                  <span className="text-foreground/60">⌕</span>
                   <input
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    className="w-[26rem] bg-transparent text-sm outline-none placeholder:text-foreground/50"
-                    placeholder="Buscar productos, por ejemplo: laptop, SSD, gamer..."
+                    className="w-[18rem] bg-transparent text-sm outline-none placeholder:text-foreground/50"
+                    placeholder="Buscar productos"
                     aria-label="Buscar"
                   />
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-white">
+                    ⌕
+                  </span>
                 </div>
               </div>
 
-              <ThemeToggle />
-              <AccountButton />
               <IconButton label="Mi cesta" onClick={openCart}>
                 <span className="relative">
                   <span className="text-sm">🛒</span>
@@ -479,33 +446,23 @@ export default function Home() {
 
           <div className="mt-3 grid gap-2 lg:hidden">
             <div className="flex h-10 items-center gap-2 rounded-full border border-foreground/10 bg-background px-4">
-              <span className="text-foreground/60">⌕</span>
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="w-full bg-transparent text-sm outline-none placeholder:text-foreground/50"
-                placeholder="Buscar en el catálogo..."
+                placeholder="Buscar productos"
                 aria-label="Buscar"
               />
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              {categories.map((c) => (
-                <a
-                  key={c.id}
-                  href={`/categorias?c=${c.id}`}
-                  className="rounded-full border border-foreground/10 bg-background px-3 py-2 text-xs text-foreground/80 transition-colors hover:bg-foreground/5 hover:text-foreground"
-                >
-                  {c.title}
-                </a>
-              ))}
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-white">
+                ⌕
+              </span>
             </div>
           </div>
         </div>
       </header>
 
       <main id="inicio">
-        <section className="relative overflow-hidden border-b border-foreground/10">
+        <section className="relative overflow-hidden bg-foreground text-white">
           <div
             ref={heroBgRef}
             className="pointer-events-none absolute inset-0"
@@ -521,48 +478,143 @@ export default function Home() {
                 className="absolute inset-0 bg-center bg-cover bg-no-repeat"
                 style={{
                   backgroundImage:
-                    "url(/images/hero/hero-tech-light.svg)",
+                    "url(/images/hero/17041-4k.jpg)",
                 }}
               />
 
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    "radial-gradient(900px 420px at 30% 25%, rgba(255,255,255,0.75), rgba(255,255,255,0.35) 55%, rgba(255,255,255,0) 75%)",
-                }}
-              />
+              <div className="absolute inset-0 bg-foreground/45" />
+              <div className="absolute inset-0 bg-gradient-to-r from-foreground/85 via-foreground/55 to-foreground/20" />
             </div>
           </div>
 
-          <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-12 lg:px-8">
-            <div className="lg:col-span-12">
-              <p className="inline-flex items-center rounded-full border border-foreground/10 bg-background px-3 py-1 text-xs text-foreground/80">
-                Tienda de computadores · Componentes · Accesorios
+          <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 lg:grid-cols-12 lg:px-8">
+            <div className="lg:col-span-7">
+              <p className="text-xs font-semibold uppercase tracking-wide text-white">
+                El poder
               </p>
-              <h1 className="mt-5 text-balance text-4xl font-semibold tracking-tight motion-safe:animate-[fadeUp_650ms_ease-out_both] sm:text-5xl">
-                Productos de tecnología con una vista clara y responsive.
+              <h1 className="mt-4 text-balance text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+                TechStore
+                <span className="block text-white">PC Gamer Ultra</span>
               </h1>
-              <p className="mt-4 max-w-xl text-pretty text-base leading-7 text-foreground/80 motion-safe:animate-[fadeUp_750ms_ease-out_both] sm:text-lg">
-                Categorías como computador gamer, portátiles, accesorios y
-                componentes. Explora el catálogo y visualiza precio y
-                descripción de forma limpia.
-              </p>
 
-              <div className="mt-7 flex flex-col gap-3 motion-safe:animate-[fadeUp_850ms_ease-out_both] sm:flex-row">
+              <ul className="mt-5 grid gap-2 text-sm leading-6 text-white">
+                <li>• Productos listos para usar y con buena lectura.</li>
+                <li>• Diseñado para gaming, trabajo y creadores.</li>
+                <li>• Configurado, probado y optimizado.</li>
+              </ul>
+
+              <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
                 <a
-                  className="inline-flex h-12 items-center justify-center rounded-full bg-foreground px-6 text-sm font-medium text-background transition-transform hover:scale-[1.02] active:scale-[0.98]"
-                  href="#pc-gamer"
+                  className="inline-flex h-12 items-center justify-center rounded-full bg-orange-500 px-6 text-sm font-medium text-white transition-transform hover:scale-[1.02] active:scale-[0.98]"
+                  href={heroProduct ? getProductDetailsHref(heroProduct) : "#pc-gamer"}
                 >
-                  Ver productos
+                  Ver producto
                 </a>
-                <a
-                  className="inline-flex h-12 items-center justify-center rounded-full border border-foreground/10 bg-background px-6 text-sm font-medium text-foreground transition-colors hover:bg-foreground/5"
-                  href="/categorias"
-                >
-                  Categorías
-                </a>
+                {heroProduct ? (
+                  <p className="text-3xl font-semibold tracking-tight text-white">
+                    {formatCOP(heroProduct.priceCOP)}
+                  </p>
+                ) : null}
               </div>
+            </div>
+
+            <div className="lg:col-span-5">
+              <div className="relative mx-auto max-w-md overflow-hidden rounded-3xl border border-background/15 bg-background/10 p-6 backdrop-blur">
+                <div className="flex items-center justify-center">
+                  <ProductMedia
+                    src={heroProduct?.photo ?? heroProduct?.image}
+                    fallbackSrc="/images/products/pc-tower.svg"
+                    alt={heroProduct?.name ?? "PC"}
+                  />
+                </div>
+                {heroProduct ? (
+                  <div className="mt-5">
+                    <p className="text-sm font-medium">{heroProduct.name}</p>
+                    <p className="mt-1 text-sm text-white">
+                      {heroProduct.description}
+                    </p>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative overflow-hidden bg-foreground text-white">
+          <div
+            className="absolute inset-0 bg-center bg-cover bg-no-repeat opacity-85"
+            style={{ backgroundImage: "url(/images/hero/17041-4k.jpg)" }}
+          />
+          <div className="absolute inset-0 bg-foreground/45" />
+          <div className="absolute inset-0 bg-gradient-to-b from-foreground/55 via-foreground/55 to-foreground/70" />
+
+          <div className="relative mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <p className="text-sm font-medium text-white">
+                Somos los #1 en
+              </p>
+              <h2 className="mt-3 text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
+                PC PARA GAMING
+              </h2>
+              <p className="mx-auto mt-4 max-w-3xl text-pretty text-sm leading-7 text-white sm:text-base">
+                Llevamos años armando equipos para gaming, creadores y trabajo. Elige un nivel y mira opciones listas para comprar.
+              </p>
+            </div>
+
+            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                {
+                  title: "PC Gamer Básico",
+                  desc: "Ideal para empezar con buenos FPS.",
+                  img: "/images/products/pc-tower.svg",
+                },
+                {
+                  title: "PC Pro Gamer",
+                  desc: "Balance perfecto para jugar y crear.",
+                  img: "/images/products/gpu.svg",
+                },
+                {
+                  title: "PC Ultra Gamer",
+                  desc: "Más potencia para competir al siguiente nivel.",
+                  img: "/images/products/ssd.svg",
+                },
+                {
+                  title: "PC Extreme Gamer",
+                  desc: "Para quienes van al máximo sin límites.",
+                  img: "/images/products/monitor.svg",
+                },
+              ].map((card) => (
+                <div
+                  key={card.title}
+                  className="overflow-hidden rounded-3xl border border-background/15 bg-background/10 backdrop-blur"
+                >
+                  <div className="flex items-center justify-center border-b border-background/15 bg-background/5 p-6">
+                    <Image
+                      src={card.img}
+                      alt={card.title}
+                      width={360}
+                      height={240}
+                      className="h-32 w-auto opacity-90"
+                    />
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-lg font-semibold tracking-tight">
+                      {card.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-6 text-white">
+                      {card.desc}
+                    </p>
+                    <div className="mt-6">
+                      <a
+                        href="/categorias?c=pc-gamer"
+                        className="inline-flex h-11 items-center justify-center rounded-full bg-orange-500 px-6 text-sm font-medium text-white transition-transform hover:scale-[1.02] active:scale-[0.98]"
+                      >
+                        Ver más
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -638,7 +690,7 @@ export default function Home() {
                   </div>
                   <a
                     href={`/categorias?c=${category.id}`}
-                    className="hidden text-sm text-orange-600 hover:underline dark:text-orange-400 sm:inline"
+                    className="text-sm text-orange-600 hover:underline dark:text-orange-400"
                   >
                     Ver más →
                   </a>
@@ -652,15 +704,6 @@ export default function Home() {
                       categoryTitle={category.title}
                     />
                   ))}
-                </div>
-
-                <div className="mt-6">
-                  <a
-                    href={`/categorias?c=${category.id}`}
-                    className="inline-flex h-11 items-center justify-center rounded-full border border-foreground/10 bg-background px-5 text-sm font-medium text-foreground transition-colors hover:bg-foreground/5"
-                  >
-                    Ver más de {category.title}
-                  </a>
                 </div>
               </div>
             </section>

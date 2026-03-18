@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { AccountButton } from "@/components/auth/AccountButton";
 import { useCart } from "@/components/cart/CartContext";
 import { formatCOP, type Category, type Product } from "@/lib/catalog";
@@ -51,7 +50,6 @@ export default function ProductDetailsClient({
           </div>
 
           <div className="flex items-center gap-2">
-            <ThemeToggle />
             <AccountButton />
             <button
               type="button"

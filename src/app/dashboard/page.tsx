@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 type AdminProduct = {
   id: string;
@@ -187,7 +186,6 @@ export default function DashboardPage() {
                   <div className="text-xs font-medium text-foreground/60">Panel</div>
                   <div className="text-lg font-semibold tracking-tight">Dashboard</div>
                 </div>
-                <ThemeToggle />
               </div>
 
               <nav className="space-y-2">

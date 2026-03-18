@@ -7,8 +7,6 @@ import {
   Laptop,
   PcCase,
 } from "lucide-react";
-
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { ProductGridCard } from "@/components/catalog/ProductGridCard";
 import {
   type CategoryId,
@@ -24,6 +22,14 @@ const CATEGORY_ICON: Record<CategoryId, React.ReactNode> = {
   accesorios: <Keyboard size={20} />,
   componentes: <Cpu size={20} />,
 };
+
+function categoriasHref(params: { c: string; q?: string; page?: number }) {
+  const sp = new URLSearchParams();
+  sp.set("c", params.c);
+  if (params.q) sp.set("q", params.q);
+  if (params.page) sp.set("page", String(params.page));
+  return `/categorias?${sp.toString()}`;
+}
 
 function parsePositiveInt(value: unknown): number | null {
   if (typeof value !== "string") return null;
@@ -47,6 +53,10 @@ export default async function CategoriasPage({
   const rawPage = resolvedSearchParams.page;
   const pageFromQuery = Array.isArray(rawPage) ? rawPage[0] : rawPage;
   const requestedPage = parsePositiveInt(pageFromQuery) ?? 1;
+
+  const rawQ = resolvedSearchParams.q;
+  const qFromQuery = Array.isArray(rawQ) ? rawQ[0] : rawQ;
+  const q = typeof qFromQuery === "string" ? qFromQuery.trim() : "";
 
   const dbCategories = await prisma.category.findMany({
     orderBy: { title: "asc" },
@@ -85,11 +95,21 @@ export default async function CategoriasPage({
     badge: p.badge ?? undefined,
   }));
 
+  const filteredProducts = q
+    ? products.filter((p) => {
+        const needle = q.toLowerCase();
+        return (
+          p.name.toLowerCase().includes(needle) ||
+          p.description.toLowerCase().includes(needle)
+        );
+      })
+    : products;
+
   const pageSize = 6;
-  const totalPages = Math.max(1, Math.ceil(products.length / pageSize));
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / pageSize));
   const currentPage = Math.min(totalPages, Math.max(1, requestedPage));
   const start = (currentPage - 1) * pageSize;
-  const pagedProducts = products.slice(start, start + pageSize);
+  const pagedProducts = filteredProducts.slice(start, start + pageSize);
 
   return (
     <div className="bg-background text-foreground">
@@ -114,8 +134,23 @@ export default async function CategoriasPage({
             </span>
           </div>
 
+          <div className="hidden flex-1 justify-center px-4 lg:flex">
+            <form action="/categorias" method="GET" className="w-full max-w-md">
+              <input type="hidden" name="c" value={selectedId} />
+              <div className="flex h-10 items-center gap-2 rounded-full border border-foreground/10 bg-background px-4">
+                <span className="text-foreground/60">⌕</span>
+                <input
+                  name="q"
+                  defaultValue={q}
+                  className="w-full bg-transparent text-sm outline-none placeholder:text-foreground/50"
+                  placeholder="Buscar en esta categoría..."
+                  aria-label="Buscar"
+                />
+              </div>
+            </form>
+          </div>
+
           <div className="flex items-center gap-2">
-            <ThemeToggle />
             <a
               href="/"
               className="rounded-full border border-foreground/10 bg-background px-4 py-2 text-sm text-foreground/80 transition-colors hover:bg-foreground/5 hover:text-foreground"
@@ -127,6 +162,22 @@ export default async function CategoriasPage({
       </header>
 
       <main>
+        <section className="mx-auto max-w-screen-2xl px-4 pt-4 sm:px-6 lg:hidden lg:px-10">
+          <form action="/categorias" method="GET">
+            <input type="hidden" name="c" value={selectedId} />
+            <div className="flex h-10 items-center gap-2 rounded-full border border-foreground/10 bg-background px-4">
+              <span className="text-foreground/60">⌕</span>
+              <input
+                name="q"
+                defaultValue={q}
+                className="w-full bg-transparent text-sm outline-none placeholder:text-foreground/50"
+                placeholder="Buscar en esta categoría..."
+                aria-label="Buscar"
+              />
+            </div>
+          </form>
+        </section>
+
         <section className="relative overflow-hidden border-b border-foreground/10">
           <div className="absolute inset-0 bg-gradient-to-br from-orange-500/18 via-foreground/5 to-orange-500/10 [mask-image:radial-gradient(65%_60%_at_50%_35%,#000,transparent)]" />
           <div className="mx-auto max-w-screen-2xl px-4 py-10 sm:px-6 lg:px-10">
@@ -152,7 +203,7 @@ export default async function CategoriasPage({
                     return (
                       <a
                         key={c.id}
-                        href={`/categorias?c=${c.id}`}
+                        href={categoriasHref({ c: c.id, q })}
                         aria-current={isActive ? "page" : undefined}
                         className={
                           "flex items-start gap-3 rounded-2xl border px-4 py-4 transition-colors " +
@@ -212,6 +263,10 @@ export default async function CategoriasPage({
                     <div className="rounded-3xl border border-foreground/10 bg-background p-8 text-sm text-foreground/80">
                       No hay productos en esta categoría.
                     </div>
+                  ) : filteredProducts.length === 0 ? (
+                    <div className="rounded-3xl border border-foreground/10 bg-background p-8 text-sm text-foreground/80">
+                      No hay resultados para “{q}”.
+                    </div>
                   ) : (
                     <>
                       <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
@@ -231,7 +286,7 @@ export default async function CategoriasPage({
                               return (
                                 <a
                                   key={page}
-                                  href={`/categorias?c=${selectedId}&page=${page}`}
+                                  href={categoriasHref({ c: selectedId, q, page })}
                                   aria-current={isActive ? "page" : undefined}
                                   className={
                                     "inline-flex h-10 min-w-10 items-center justify-center rounded-full border px-4 text-sm font-medium transition-colors " +
