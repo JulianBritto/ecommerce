@@ -18,8 +18,10 @@ async function fetchMe(): Promise<MeUser | null> {
 
 export function AccountButton({
   variant = "icon",
+  className,
 }: {
   variant?: "icon" | "link";
+  className?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<"login" | "register">("login");
@@ -107,7 +109,10 @@ export function AccountButton({
         <button
           type="button"
           onClick={openModal}
-          className="text-xs font-semibold uppercase tracking-wide text-foreground/80 transition-colors hover:text-foreground"
+          className={
+            "text-xs font-semibold uppercase tracking-wide transition-colors " +
+            (className ?? "text-foreground/80 hover:text-foreground")
+          }
         >
           {me ? "Mi cuenta" : "Iniciar sesión / Registrarse"}
         </button>
@@ -116,7 +121,11 @@ export function AccountButton({
           type="button"
           aria-label="Mi cuenta"
           onClick={openModal}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-foreground/10 bg-background text-foreground/80 transition-colors hover:bg-foreground/5 hover:text-foreground"
+          className={
+            "inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors " +
+            (className ??
+              "border border-foreground/10 bg-background text-foreground/80 hover:bg-foreground/5 hover:text-foreground")
+          }
         >
           <User size={18} />
         </button>
