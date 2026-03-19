@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import {
   ChevronRight,
   Cpu,
@@ -116,12 +117,12 @@ export default async function CategoriasPage({
       <header className="sticky top-0 z-50 border-b border-foreground/10 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
-            <a href="/" className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2">
               <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-orange-500/15 text-orange-600 dark:text-orange-400">
                 <span className="text-sm font-semibold">T</span>
               </span>
               <span className="font-semibold tracking-tight">TechStore</span>
-            </a>
+            </Link>
 
             <span className="hidden text-sm text-foreground/60 sm:inline">
               <ChevronRight size={16} className="inline" /> Categorías
@@ -151,12 +152,12 @@ export default async function CategoriasPage({
           </div>
 
           <div className="flex items-center gap-2">
-            <a
+            <Link
               href="/"
               className="rounded-full border border-foreground/10 bg-background px-4 py-2 text-sm text-foreground/80 transition-colors hover:bg-foreground/5 hover:text-foreground"
             >
               Volver
-            </a>
+            </Link>
           </div>
         </div>
       </header>
@@ -201,7 +202,7 @@ export default async function CategoriasPage({
                   {categories.map((c) => {
                     const isActive = c.id === selectedId;
                     return (
-                      <a
+                      <Link
                         key={c.id}
                         href={categoriasHref({ c: c.id, q })}
                         aria-current={isActive ? "page" : undefined}
@@ -228,7 +229,7 @@ export default async function CategoriasPage({
                             {c.description}
                           </span>
                         </span>
-                      </a>
+                      </Link>
                     );
                   })}
                 </nav>
@@ -284,7 +285,7 @@ export default async function CategoriasPage({
                             (page) => {
                               const isActive = page === currentPage;
                               return (
-                                <a
+                                <Link
                                   key={page}
                                   href={categoriasHref({ c: selectedId, q, page })}
                                   aria-current={isActive ? "page" : undefined}
@@ -296,7 +297,7 @@ export default async function CategoriasPage({
                                   }
                                 >
                                   {page}
-                                </a>
+                                </Link>
                               );
                             }
                           )}
