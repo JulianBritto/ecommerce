@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 
 import { formatCOP } from "@/lib/catalog";
@@ -16,6 +17,7 @@ export function CartDrawer() {
     setQuantity,
     itemsCount,
   } = useCart();
+  const router = useRouter();
 
   const panelRef = useRef<HTMLDivElement | null>(null);
   const [renderState, setRenderState] = useState<"closed" | "open" | "closing">(
@@ -257,6 +259,16 @@ export function CartDrawer() {
               <p className="text-sm text-foreground/80">Total</p>
               <p className="text-lg font-semibold">{formatCOP(totalCOP)}</p>
             </div>
+            <button
+              type="button"
+              onClick={() => {
+                closeCart();
+                router.push('/checkout');
+              }}
+              className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-foreground px-4 py-3 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
+            >
+              Finalizar compra
+            </button>
           </div>
         </div>
       </div>

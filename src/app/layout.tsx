@@ -33,8 +33,8 @@ export default function RootLayout({
       >
         <CartRoot>
           {children}
-          <SiteFooter />
         </CartRoot>
+        <SiteFooter />
       </body>
     </html>
   );

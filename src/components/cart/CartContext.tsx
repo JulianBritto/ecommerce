@@ -16,6 +16,8 @@ export type CartItem = {
   name: string;
   description: string;
   priceCOP: number;
+  image: string;
+  photo?: string;
 };
 
 type CartLine = {
@@ -50,12 +52,44 @@ function toCartItem(product: Product): CartItem {
     name: product.name,
     description: product.description,
     priceCOP: product.priceCOP,
+    image: product.image,
+    photo: product.photo,
   };
 }
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
+  const CART_STORAGE_KEY = "techstore_cart_v1";
+
   const [isOpen, setIsOpen] = useState(false);
-  const [byId, setById] = useState<Record<string, CartLine>>({});
+  const [byId, setById] = useState<Record<string, CartLine>>(() => {
+    if (typeof window === "undefined") return {};
+    try {
+      const raw = window.localStorage.getItem(CART_STORAGE_KEY);
+      if (!raw) return {};
+
+      const parsed: unknown = JSON.parse(raw);
+      const lines = Array.isArray(parsed)
+        ? parsed
+        : typeof parsed === "object" && parsed !== null && "lines" in parsed
+          ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (parsed as any).lines
+          : null;
+
+      if (!Array.isArray(lines)) return {};
+
+      const next: Record<string, CartLine> = {};
+      for (const line of lines as CartLine[]) {
+        if (!line?.item?.id) continue;
+        const qty = Number(line.quantity);
+        if (!Number.isFinite(qty) || qty <= 0) continue;
+        next[line.item.id] = { item: line.item, quantity: Math.floor(qty) };
+      }
+      return next;
+    } catch {
+      return {};
+    }
+  });
+
   const [toasts, setToasts] = useState<{ id: string; message: string }[]>([]);
   const toastTimersRef = useRef<Record<string, number>>({});
   const toastSeqRef = useRef(0);
@@ -94,6 +128,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       toastTimersRef.current = {};
     };
   }, []);
+
+  // Persistir carrito para pruebas (evita que /checkout llegue vacío por resets de estado)
+  useEffect(() => {
+    try {
+      if (typeof window === "undefined") return;
+      const linesArr = Object.values(byId);
+      window.localStorage.setItem(
+        CART_STORAGE_KEY,
+        JSON.stringify({ lines: linesArr })
+      );
+    } catch {
+      // ignore persistence errors
+    }
+  }, [byId]);
 
   const value: CartContextValue = useMemo(
     () => ({

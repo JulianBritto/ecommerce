@@ -48,9 +48,6 @@ export default async function ProductDetailsPage({
   };
 
   return (
-    <ProductDetailsClient
-      category={category}
-      product={product}
-    />
+    <ProductDetailsClient category={category} product={product} />
   );
 }

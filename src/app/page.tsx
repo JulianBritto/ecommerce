@@ -180,7 +180,7 @@ function ProductCard({
   );
 }
 
-export default function Home() {
+function HomeInner() {
   const { openCart, itemsCount } = useCart();
   const [query, setQuery] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
@@ -420,7 +420,7 @@ export default function Home() {
 
         <div className="mx-auto max-w-6xl px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-4">
-            <a href="#inicio" className="flex items-center gap-2">
+            <a href="/" className="flex items-center gap-2">
               <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-orange-500/15 text-orange-600 dark:text-orange-400">
                 <span className="text-sm font-semibold">T</span>
               </span>
@@ -428,10 +428,10 @@ export default function Home() {
             </a>
 
             <nav className="hidden flex-1 items-center justify-center gap-6 text-xs font-semibold uppercase tracking-wide text-foreground/80 lg:flex">
-              <a href="#inicio" className="hover:text-foreground">
+              <a href="/" className="hover:text-foreground">
                 Inicio
               </a>
-              <a href="#categorias" className="hover:text-foreground">
+              <a href="/#categorias" className="hover:text-foreground">
                 Categorias
               </a>
             </nav>
@@ -965,4 +965,8 @@ export default function Home() {
         ) : null}
       </div>
   );
+}
+
+export default function Home() {
+  return <HomeInner />;
 }

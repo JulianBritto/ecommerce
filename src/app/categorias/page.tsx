@@ -15,6 +15,7 @@ import {
 } from "@/lib/catalog";
 import { prisma } from "@/lib/db";
 import type { Category } from "@/lib/catalog";
+import { CartSummary } from "@/components/cart/CartSummary";
 
 const CATEGORY_ICON: Record<CategoryId, React.ReactNode> = {
   "pc-gamer": <PcCase size={20} />,
@@ -113,7 +114,7 @@ export default async function CategoriasPage({
   const pagedProducts = filteredProducts.slice(start, start + pageSize);
 
   return (
-    <div className="bg-background text-foreground">
+      <div className="bg-background text-foreground">
       <header className="sticky top-0 z-50 border-b border-foreground/10 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
@@ -152,12 +153,7 @@ export default async function CategoriasPage({
           </div>
 
           <div className="flex items-center gap-2">
-            <Link
-              href="/"
-              className="rounded-full border border-foreground/10 bg-background px-4 py-2 text-sm text-foreground/80 transition-colors hover:bg-foreground/5 hover:text-foreground"
-            >
-              Volver
-            </Link>
+            <CartSummary />
           </div>
         </div>
       </header>

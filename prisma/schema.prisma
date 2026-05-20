@@ -43,3 +43,18 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
+
+model Transaction {
+  id                  String   @id @default(cuid())
+  cus                 String   @unique
+  productNames        String   // JSON array string of product names
+  productQuantities   String   // JSON array string of quantities
+  totalAmount         Int      // Total amount in COP
+  status              String   // pending, approved, failed, etc.
+  customerName        String
+  customerEmail       String
+  transactionDate     DateTime // When the customer initiated the transaction
+  statusReceivedAt    DateTime @default(now()) // When we received the final status
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}

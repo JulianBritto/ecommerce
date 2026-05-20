@@ -79,7 +79,14 @@ export function SiteFooter() {
       <div className="relative mx-auto max-w-6xl px-4 py-12 text-sm text-white/75 sm:px-6 lg:px-8">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-12">
           <div className="lg:col-span-5">
-            <a href="#inicio" className="inline-flex items-center gap-2">
+            <a
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.assign("/");
+              }}
+              className="inline-flex items-center gap-2"
+            >
               <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-orange-500/15 text-orange-600 dark:text-orange-400">
                 <span className="text-sm font-semibold">T</span>
               </span>
